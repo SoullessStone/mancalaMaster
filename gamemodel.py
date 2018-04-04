@@ -19,7 +19,10 @@ class GameModel:
                0,
                0,0,0,0,0,0,
                0];
-
+    
+    def getFieldValue(position):
+        return __gamefield[position]
+        
     
     def __init__(self):
         print("new Game created");
