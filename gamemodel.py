@@ -23,10 +23,5 @@ class GameModel:
     def getFieldValue(self,position):
         return self.__gamefield[position]
         
-    
     def __init__(self):
         print("new Game created");
-
-
-game = GameModel()
-print(game.PLAYER2_BASE)
