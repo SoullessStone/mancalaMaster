@@ -22,6 +22,9 @@ class GameModel:
     
     def getFieldValue(self,position):
         return self.__gamefield[position]
+    
+    def changeFieldValue(self,position,newValue):
+        self.__gamefield[position] = newValue;
         
     def __init__(self):
         print("new Game created");

@@ -1,22 +1,30 @@
 from tkinter import *;
 from gamemodel import *;
 
+#Dummy, remove when game is ready
+class Data:
+    game = GameModel();
+    i = 1;
+    def getData(self):
+        self.game.changeFieldValue(0, self.i);
+        self.i = self.i + 1;
+        return self.game;
+    
 # Wie kann man das Model updaten?
 class GameView:
     fenster = None;
     gameModel = GameModel();
-    #i = 1;
+    data = Data();
 
     def doPlayStep(self):
         self.fenster.title("Mancala");
         
     def updateView(self):
-        self.points_p1.config(text=str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_BASE)));
-        self.points_p2.config(text=str(self.gameModel.getFieldValue(self.gameModel.PLAYER2_BASE)));
+        model = self.data.getData();
+        self.points_p1.config(text=str(model.getFieldValue(model.PLAYER1_BASE)));
+        self.points_p2.config(text=str(model.getFieldValue(model.PLAYER2_BASE)));
         
-        self.p1_1["text"] = str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_1)+self.i);
-        #self.p1_1["text"] = str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_1)+self.i);
-        #self.i = self.i + 1;
+        self.p1_1["text"] = str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_1));
         self.p1_2["text"] = str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_2));
         self.p1_3["text"] = str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_3));
         self.p1_4["text"] = str(self.gameModel.getFieldValue(self.gameModel.PLAYER1_4));
@@ -68,10 +76,8 @@ class GameView:
         self.fenster.mainloop();
 
 
+
 view = GameView();
-model = GameModel();
-print(model.getFieldValue(model.PLAYER1_BASE));
-view.updateView();
 
 
 
