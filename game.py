@@ -4,6 +4,7 @@ class Game:
     __turn = 0;
     __MAX_TURN = 0;
     __MIN_TURN = 1;
+    gameModel = None;
 
     # Returns, if it is the turn of MAX
     def isMaxTurn(self):
@@ -45,8 +46,9 @@ class Game:
     def utility(self):
         raise NotImplementedError("You should have implemented this");
     
-
-
+    def __init__(self):
+        self.gameModel = GameModel();
+        
 
 
 print(Game().start());
