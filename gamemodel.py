@@ -15,13 +15,13 @@ class GameModel:
     PLAYER2_6 = 12;
     PLAYER2_BASE = 13;
     
-    __gamefield=[0,0,0,0,0,0,
+    __gamefield=[4,4,4,4,4,4,
                0,
-               0,0,0,0,0,0,
+               4,4,4,4,4,4,
                0];
     
-    def getFieldValue(position):
-        return __gamefield[position]
+    def getFieldValue(self,position):
+        return self.__gamefield[position]
         
     
     def __init__(self):
