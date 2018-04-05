@@ -20,11 +20,28 @@ class GameModel:
                4,4,4,4,4,4,
                0];
     
-    def getFieldValue(self,position):
-        return self.__gamefield[position]
-    
-    def changeFieldValue(self,position,newValue):
-        self.__gamefield[position] = newValue;
+    __turn = 0;
         
     def __init__(self):
         print("new Game created");
+    
+    def getTurn(self):
+        return self.__turn;
+    
+    def switchTurn(self):
+        if self.__turn == 1:
+            self.__turn = 0;
+        else:
+            self.__turn = 1;
+    
+    def getFieldValue(self,position):
+        return self.__gamefield[position];
+    
+    def changeFieldValue(self,position,newValue):
+        self.__gamefield[position] = newValue;
+
+    def getGamefield(self):
+        return self.__gamefield;
+
+    def printGamefield(self):
+        print("gamefield=" + str(self.__gamefield));

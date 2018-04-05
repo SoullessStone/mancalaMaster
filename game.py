@@ -1,26 +1,56 @@
 from gamemodel import GameModel
 
 class Game:
-    __turn = 0;
+    gameModel = None;
     __MAX_TURN = 0;
     __MIN_TURN = 1;
-    gameModel = None;
 
     # Returns, if it is the turn of MAX
     def isMaxTurn(self):
-        return self.__turn == self.__MAX_TURN;
+        return self.gameModel.getTurn() == self.__MAX_TURN;
     
     # Returns, if it is the turn of MIN
     def isMinTurn(self):
-        return self.__turn == self.__MIN_TURN;
+        return self.gameModel.getTurn() == self.__MIN_TURN;
     
     # Returns the initial state
-    def start(self):
-        return GameModel();
+    #def start(self):
+    #    return GameModel();
+    # Brauchen wir nicht, wird im init gemacht.
     
     # Do a move on current state
+    #!!!!!!!! TODO: Last bean into empty holder (Spielstand muss in gamemodel)
     def doMove(self, move):
-        raise NotImplementedError("You should have implemented this");
+        if not self.isLegalMove(move):
+            print("Move " + str(move) + "is not legal");
+            return;
+        # Get Bean count
+        beans = self.gameModel.getFieldValue(move);
+        # Remove all beans from taken holder
+        self.gameModel.changeFieldValue(move, 0);
+        currentField = move + 1;
+        while beans > 0:
+            if (self.isMaxTurn() and currentField == self.gameModel.PLAYER2_BASE):
+                currentField = 0;
+                continue; # Player 1 does not put beans into Player 2 base
+            if (self.isMinTurn() and currentField == self.gameModel.PLAYER1_BASE):
+                currentField = currentField + 1;
+                continue; # Player 2 does not put beans into Player 1 base
+
+            # Add bean to current Field
+            currentValue = self.gameModel.getFieldValue(currentField);
+            newValue = currentValue + 1;
+            self.gameModel.changeFieldValue(currentField, newValue);
+            #print(str(currentField) + "->" + str(newValue));
+
+            # Move to next field
+            currentField = currentField + 1;
+            if currentField == self.gameModel.PLAYER2_BASE + 1:
+                currentField = 0;
+            # One bean taken, less remain
+            beans = beans - 1;
+        # Other Players turn
+        self.gameModel.switchTurn();
     
     # Returns the last move leading to this state
     def getLastMove(self):
@@ -28,7 +58,20 @@ class Game:
     
     # Returns all possible moves of this state
     def getPossibleMoves(self):
-        raise NotImplementedError("You should have implemented this");
+        i = self.gameModel.PLAYER1_1;
+        minI = i;
+        maxI = self.gameModel.PLAYER1_6;
+        if self.isMinTurn():
+            i = self.gameModel.PLAYER2_1;
+            minI = i;
+            maxI = self.gameModel.PLAYER2_6;
+        possibleMoves = [];
+        for move in range(minI, maxI + 1):
+            if self.gameModel.getFieldValue(move) == 0:
+                print("Move " + str(move) + " is not possible.");
+            else:
+                possibleMoves.append(move);
+        return possibleMoves;
     
     # Returns all successor states
     def expand(self):
@@ -36,7 +79,11 @@ class Game:
     
     # Returns, if the current state is terminal
     def isTerminal(self):
-        raise NotImplementedError("You should have implemented this");
+        fieldsToCheck = self.getPlayerOneMoves();
+        playerOneSideEmpty = self.areAllFieldsEmpty(fieldsToCheck);
+        fieldsToCheck = self.getPlayerTwoMoves();
+        playerTwoSideEmpty = self.areAllFieldsEmpty(fieldsToCheck);
+        return (playerOneSideEmpty or playerTwoSideEmpty);
     
     # Returns the evaluation of a state related to MAX
     def evalValueForMax(self):
@@ -48,7 +95,35 @@ class Game:
     
     def __init__(self):
         self.gameModel = GameModel();
-        
 
+    # Hilfsmethoden
+    
+    def areAllFieldsEmpty(self, fields):
+        allEmpty = True;
+        for field in fields:
+            if self.gameModel.getFieldValue(field) != 0:
+                allEmpty = False;
+        return allEmpty;
+    
+    def getPlayerOneMoves(self):
+        return [self.gameModel.PLAYER1_1,
+                         self.gameModel.PLAYER1_2,
+                         self.gameModel.PLAYER1_3,
+                         self.gameModel.PLAYER1_4,
+                         self.gameModel.PLAYER1_5,
+                         self.gameModel.PLAYER1_6];
+    
+    def getPlayerTwoMoves(self):
+        return [self.gameModel.PLAYER2_1,
+                         self.gameModel.PLAYER2_2,
+                         self.gameModel.PLAYER2_3,
+                         self.gameModel.PLAYER2_4,
+                         self.gameModel.PLAYER2_5,
+                         self.gameModel.PLAYER2_6];
+    
+    def isLegalMove(self, move):
+        if self.isMinTurn():
+            return move in self.getPlayerTwoMoves();
+        if self.isMaxTurn():
+            return move in self.getPlayerOneMoves();
 
-print(Game().start());
