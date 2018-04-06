@@ -15,15 +15,19 @@ class GameModel:
     PLAYER2_6 = 12;
     PLAYER2_BASE = 13;
     
-    __gamefield=[4,4,4,4,4,4,
-               0,
-               4,4,4,4,4,4,
-               0];
+    __gamefield=[]
     
     __turn = 0;
         
     def __init__(self):
-        print("new Game created");
+        print("New Gamemodel created");
+        self.resetGamefield();
+
+    def resetGamefield(self):
+        self.__gamefield=[4,4,4,4,4,4,
+               0,
+               4,4,4,4,4,4,
+               0];
     
     def getTurn(self):
         return self.__turn;

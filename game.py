@@ -14,15 +14,16 @@ class Game:
         return self.gameModel.getTurn() == self.__MIN_TURN;
     
     # Returns the initial state
-    #def start(self):
-    #    return GameModel();
-    # Brauchen wir nicht, wird im init gemacht.
+    def reset(self):
+        self.gameModel = GameModel();
     
     # Do a move on current state
 
     def doMove(self, move):
+        if self.isTerminal():
+            return;
         if not self.isFieldOnCurrentPlayerSide(move):
-            print("Move " + str(move) + "is not legal");
+            print("Move " + str(move) + " is not legal");
             return;
         # Get Bean count
         beans = self.gameModel.getFieldValue(move);
