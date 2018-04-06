@@ -19,9 +19,9 @@ class Game:
     # Brauchen wir nicht, wird im init gemacht.
     
     # Do a move on current state
-    #!!!!!!!! TODO: Last bean into empty holder (Spielstand muss in gamemodel)
+
     def doMove(self, move):
-        if not self.isLegalMove(move):
+        if not self.isFieldOnCurrentPlayerSide(move):
             print("Move " + str(move) + "is not legal");
             return;
         # Get Bean count
@@ -41,14 +41,18 @@ class Game:
             currentValue = self.gameModel.getFieldValue(currentField);
             newValue = currentValue + 1;
             self.gameModel.changeFieldValue(currentField, newValue);
-            #print(str(currentField) + "->" + str(newValue));
+            # One bean taken, less remain
+            beans = beans - 1;
 
+            # if it is the last bean and it is put on an empty field on the players side, the
+            # the player can take the one bean on his side and the beans on the other side
+            if newValue == 1 and beans == 0 and self.isFieldOnCurrentPlayerSide(currentField):
+                self.handleLastBeanOnOwnEmptyField(currentField);
+            
             # Move to next field
             currentField = currentField + 1;
             if currentField == self.gameModel.PLAYER2_BASE + 1:
                 currentField = 0;
-            # One bean taken, less remain
-            beans = beans - 1;
         # Other Players turn
         self.gameModel.switchTurn();
     
@@ -96,7 +100,9 @@ class Game:
     def __init__(self):
         self.gameModel = GameModel();
 
-    # Hilfsmethoden
+    ############################################################################
+    ############################ Hilfsmethoden #################################
+    ############################################################################
     
     def areAllFieldsEmpty(self, fields):
         allEmpty = True;
@@ -121,9 +127,76 @@ class Game:
                          self.gameModel.PLAYER2_5,
                          self.gameModel.PLAYER2_6];
     
-    def isLegalMove(self, move):
+    def isFieldOnCurrentPlayerSide(self, move):
         if self.isMinTurn():
             return move in self.getPlayerTwoMoves();
         if self.isMaxTurn():
             return move in self.getPlayerOneMoves();
+    
+    def getCurrentPlayerBase(self):
+        if self.isMinTurn():
+            return self.gameModel.PLAYER2_BASE;
+        if self.isMaxTurn():
+            return self.gameModel.PLAYER1_BASE;
+    
+    def handleLastBeanOnOwnEmptyField(self, curField):
+        opposingField = self.getOpposingField(curField);
+        beansOnOpposingField = self.gameModel.getFieldValue(opposingField);
+        playerBase = self.getCurrentPlayerBase();
+        beanCountInBase = self.gameModel.getFieldValue(playerBase);
+        self.gameModel.changeFieldValue(playerBase, beanCountInBase + beansOnOpposingField + 1);
+        self.gameModel.changeFieldValue(opposingField, 0);
+        self.gameModel.changeFieldValue(curField, 0);
+
+    def getOpposingField(self, field):
+        if field == self.gameModel.PLAYER1_1:
+            return self.gameModel.PLAYER2_6;
+        if field == self.gameModel.PLAYER1_2:
+            return self.gameModel.PLAYER2_5;
+        if field == self.gameModel.PLAYER1_3:
+            return self.gameModel.PLAYER2_4;
+        if field == self.gameModel.PLAYER1_4:
+            return self.gameModel.PLAYER2_3;
+        if field == self.gameModel.PLAYER1_5:
+            return self.gameModel.PLAYER2_2;
+        if field == self.gameModel.PLAYER1_6:
+            return self.gameModel.PLAYER2_1;
+        if field == self.gameModel.PLAYER2_1:
+            return self.gameModel.PLAYER1_6;
+        if field == self.gameModel.PLAYER2_2:
+            return self.gameModel.PLAYER1_5;
+        if field == self.gameModel.PLAYER2_3:
+            return self.gameModel.PLAYER1_4;
+        if field == self.gameModel.PLAYER2_4:
+            return self.gameModel.PLAYER1_3;
+        if field == self.gameModel.PLAYER2_5:
+            return self.gameModel.PLAYER1_2;
+        if field == self.gameModel.PLAYER2_6:
+            return self.gameModel.PLAYER1_1;
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
