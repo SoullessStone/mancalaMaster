@@ -1,5 +1,7 @@
 from tkinter import *;
 from game import Game;
+from player_random import RandomPlayer;
+from time import sleep;
 
 
     
@@ -7,6 +9,9 @@ from game import Game;
 class GameView:
     fenster = None;
     game = Game();
+    randomPlayer = RandomPlayer();
+    player = "RANDOM";
+    delayAiMove = 0;
     
         
     def updateView(self):
@@ -26,7 +31,7 @@ class GameView:
         self.p2_4["text"] = str(self.game.gameModel.getFieldValue(self.game.gameModel.PLAYER2_4));
         self.p2_5["text"] = str(self.game.gameModel.getFieldValue(self.game.gameModel.PLAYER2_5));
         self.p2_6["text"] = str(self.game.gameModel.getFieldValue(self.game.gameModel.PLAYER2_6));
-
+            
         if self.game.isMaxTurn():
             self.player1_turn["text"] = "Spieler 1 darf spielen";
             self.player2_turn["text"] = "";
@@ -37,8 +42,15 @@ class GameView:
             self.player1_turn["text"] = "";
             self.player2_turn["text"] = "";
             self.terminal["text"] = "Aus die Maus...";
+        
+        if self.player == "RANDOM" and self.game.isMinTurn():
+            if self.delayAiMove == 50:
+               self.randomPlayer.doMove(); # Erst jetzt (UI konnte sich updaten, User sieht Ergebnis seines Zuges
+               self.delayAiMove = 0;
+            else:
+                self.delayAiMove = self.delayAiMove + 1;
             
-        self.fenster.after(2,self.updateView);
+        self.fenster.after(50,self.updateView);
 
     def doPlayStep(self,button):
         # Do Play in Game
@@ -47,7 +59,7 @@ class GameView:
     def __init__(self):
         self.fenster = Tk();
         self.fenster.title("Mancala");
-        self.fenster.after(2,self.updateView);
+        self.fenster.after(50,self.updateView);
         
         self.p1_1 = Button(self.fenster, text="0", command=lambda: self.doPlayStep(self.game.gameModel.PLAYER1_1));
         self.p1_2 = Button(self.fenster, text="0", command=lambda: self.doPlayStep(self.game.gameModel.PLAYER1_2));
@@ -88,6 +100,8 @@ class GameView:
         self.player2_turn.grid(row=0, column=6, pady = 20);
         self.terminal.grid(row=2, column=6, pady = 20);
         self.reset.grid(row=2, column=7, pady = 20);
+
+        self.randomPlayer.setGame(self.game);
         
         self.fenster.mainloop();
 

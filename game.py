@@ -72,9 +72,7 @@ class Game:
             maxI = self.gameModel.PLAYER2_6;
         possibleMoves = [];
         for move in range(minI, maxI + 1):
-            if self.gameModel.getFieldValue(move) == 0:
-                print("Move " + str(move) + " is not possible.");
-            else:
+            if self.gameModel.getFieldValue(move) != 0:
                 possibleMoves.append(move);
         return possibleMoves;
     
@@ -143,6 +141,8 @@ class Game:
     def handleLastBeanOnOwnEmptyField(self, curField):
         opposingField = self.getOpposingField(curField);
         beansOnOpposingField = self.gameModel.getFieldValue(opposingField);
+        if beansOnOpposingField == 0:
+            return; # in this case, nothing happens
         playerBase = self.getCurrentPlayerBase();
         beanCountInBase = self.gameModel.getFieldValue(playerBase);
         self.gameModel.changeFieldValue(playerBase, beanCountInBase + beansOnOpposingField + 1);
