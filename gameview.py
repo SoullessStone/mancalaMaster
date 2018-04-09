@@ -1,6 +1,7 @@
 from tkinter import *;
 from game import Game;
 from player_random import RandomPlayer;
+from player_alphabeta import AlphaBetaPlayer;
 from time import sleep;
 
 
@@ -10,7 +11,8 @@ class GameView:
     fenster = None;
     game = Game();
     randomPlayer = RandomPlayer();
-    player = "RANDOM";
+    alphabetaPlayer = AlphaBetaPlayer();
+    player = "ALPHABETA";
     delayAiMove = 0;
     
         
@@ -49,6 +51,14 @@ class GameView:
                self.delayAiMove = 0;
             else:
                 self.delayAiMove = self.delayAiMove + 1;
+
+        if self.player == "ALPHABETA" and self.game.isMinTurn():
+            if self.delayAiMove == 50:
+                self.alphabetaPlayer.doMove();
+                self.delayAiMove = 0;
+            else:
+                self.delayAiMove = self.delayAiMove + 1;
+            
             
         self.fenster.after(50,self.updateView);
 
@@ -102,6 +112,7 @@ class GameView:
         self.reset.grid(row=2, column=7, pady = 20);
 
         self.randomPlayer.setGame(self.game);
+        self.alphabetaPlayer.setGame(self.game);
         
         self.fenster.mainloop();
 
