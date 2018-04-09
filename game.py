@@ -16,9 +16,27 @@ class Game:
     # Returns the initial state
     def reset(self):
         self.gameModel = GameModel();
+
+    # Do Bean Final Movement
+    def doTerminalBeanMovement(self):
+        newValue = self.gameModel.getFieldValue(self.gameModel.PLAYER1_BASE) +  self.gameModel.getFieldValue(self.gameModel.PLAYER1_1) + self.gameModel.getFieldValue(self.gameModel.PLAYER1_2) + self.gameModel.getFieldValue(self.gameModel.PLAYER1_3) + self.gameModel.getFieldValue(self.gameModel.PLAYER1_4) + self.gameModel.getFieldValue(self.gameModel.PLAYER1_5) + self.gameModel.getFieldValue(self.gameModel.PLAYER1_6);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_BASE, newValue);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_1,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_2,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_3,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_4,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_5,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER1_6,0);
+        newValue = self.gameModel.getFieldValue(self.gameModel.PLAYER2_BASE) +  self.gameModel.getFieldValue(self.gameModel.PLAYER2_1) + self.gameModel.getFieldValue(self.gameModel.PLAYER2_2) + self.gameModel.getFieldValue(self.gameModel.PLAYER2_3) + self.gameModel.getFieldValue(self.gameModel.PLAYER2_4) + self.gameModel.getFieldValue(self.gameModel.PLAYER2_5) + self.gameModel.getFieldValue(self.gameModel.PLAYER2_6);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_BASE, newValue);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_1,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_2,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_3,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_4,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_5,0);
+        self.gameModel.changeFieldValue(self.gameModel.PLAYER2_6,0);
     
     # Do a move on current state
-
     def doMove(self, move):
         if self.isTerminal():
             return;
@@ -27,6 +45,12 @@ class Game:
             return;
         # Get Bean count
         beans = self.gameModel.getFieldValue(move);
+
+        # No Beans in Field no Move possible
+        if beans == 0:
+            print("Move " + str(move) + " no beans to move");
+            return;
+        
         # Remove all beans from taken holder
         self.gameModel.changeFieldValue(move, 0);
         currentField = move + 1;
@@ -86,6 +110,8 @@ class Game:
         playerOneSideEmpty = self.areAllFieldsEmpty(fieldsToCheck);
         fieldsToCheck = self.getPlayerTwoMoves();
         playerTwoSideEmpty = self.areAllFieldsEmpty(fieldsToCheck);
+        if(playerOneSideEmpty or playerTwoSideEmpty):
+            self.doTerminalBeanMovement();
         return (playerOneSideEmpty or playerTwoSideEmpty);
     
     # Returns the evaluation of a state related to MAX
