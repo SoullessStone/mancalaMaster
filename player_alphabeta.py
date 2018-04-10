@@ -12,13 +12,19 @@ class AlphaBetaPlayer:
 
     def doMove(self):
         if self.currentGame.isMinTurn():
-            self.doAlphaBeta(self.currentGame, 0, 1, []);
+            self.doAlphaBeta(self.currentGame, 0, 2, []);
 
 
 
 
-    def checkIfBetterMove(self, moveListe, div):
+    def checkIfBetterMoveMax(self, moveListe, div):
         if(self.__bestDiv < div):
+            self.__bestDiv = div;
+            self.__bestMoveListe = moveListe;
+            print("Div is " + str(div) + " on Move " + str(moveListe));
+
+    def checkIfBetterMoveMin(self, moveListe, div):
+        if(self.__bestDiv>div):
             self.__bestDiv = div;
             self.__bestMoveListe = moveListe;
             print("Div is " + str(div) + " on Move " + str(moveListe));
@@ -41,8 +47,11 @@ class AlphaBetaPlayer:
                 # write move to Liste
                 newmoveListe.append(move);
                 # checkIfBetterMovement
-                div = newGame.gameModel.getFieldValue(newGame.gameModel.PLAYER1_BASE) - newGame.gameModel.getFieldValue(newGame.gameModel.PLAYER2_BASE)
-                self.checkIfBetterMove(newmoveListe, div);
+                div = newGame.gameModel.getFieldValue(newGame.gameModel.PLAYER2_BASE) - newGame.gameModel.getFieldValue(newGame.gameModel.PLAYER1_BASE)
+                if newGame.isMinTurn():
+                    self.checkIfBetterMoveMin(newmoveListe, div);
+                else:
+                    self.checkIfBetterMoveMax(newmoveListe, div);
                 self.doAlphaBeta(newGame, newDepth,maxdepth, newmoveListe);
                 
         
