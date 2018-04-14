@@ -4,6 +4,7 @@ class Game:
     gameModel = None;
     __MAX_TURN = 0;
     __MIN_TURN = 1;
+    __lastMove = None;
 
     # Returns, if it is the turn of MAX
     def isMaxTurn(self):
@@ -50,6 +51,9 @@ class Game:
         if beans == 0:
             print("Move " + str(move) + " no beans to move");
             return;
+
+        # set last Move
+        self.__lastMove = move;
         
         # Remove all beans from taken holder
         self.gameModel.changeFieldValue(move, 0);
@@ -83,7 +87,7 @@ class Game:
     
     # Returns the last move leading to this state
     def getLastMove(self):
-        raise NotImplementedError("You should have implemented this");
+        return self.__lastMove;
     
     # Returns all possible moves of this state
     def getPossibleMoves(self):

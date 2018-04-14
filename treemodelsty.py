@@ -34,6 +34,9 @@ class Tree:
     def getCurrentGame(self):
         return self.__gameStatus;
 
+    def setMoveListe(self, moveListe):
+        self.__moveListe = moveListe;
+
     def calculateTree(self, game, depth, maxdepth, divBefore, currentNode):
         possibleMoves = game.getPossibleMoves();
         for move in possibleMoves:
@@ -57,10 +60,12 @@ class Tree:
                 self.calculateTree(newGame, newDepth,maxdepth, node.getDivStatus(), node);
 
     def resortingTree(self, currentNode):
-        for node in currentNode.getSubTreeList():
+        subTrees = currentNode.getSubTreeList();
+        for node in subTrees:
             node.calcDiv(currentNode.getDivStatus());
-            del node.getMoveListe[0];
-            del node.getMoveListe[0];
+            newMoveListe = [];
+            newMoveListe = node.getMoveListe()[2:];
+            node.setMoveListe(newMoveListe);
             self.resortingTree(node);
         if currentNode.__gameStatus == None:
             self.calculateTree(currentNode.getCurrentGame(),0,2,currentNode.getDivStatus(), currentNode);
