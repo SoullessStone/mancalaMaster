@@ -1,6 +1,8 @@
 from game import Game;
 from copy import deepcopy;
 import uuid;
+import gc;
+import time;
 
 class Tree:
     __id = None;
@@ -78,6 +80,12 @@ class Tree:
                 return tree;
         return None;
 
+    def deleteAllNodesExeptWhenMatchingMove(self, move):
+        for tree in self.__subTrees:
+            if not tree.getMoveToGetHere() == move:
+                del(tree);
+        gc.collect();
+
     def traverse(self):
         print(str(self.__depth) + " " + str(self.__id) + " -> move to get here: " + str(self.__moveToGetHere) + ", value: " + str(self.__value));
         for tree in self.__subTrees:
@@ -86,15 +94,50 @@ class Tree:
     def getBestMoveForMax(self):
         maxTree = Tree(None,None,None);
         for tree in self.__subTrees:
-            print(tree.getValue());
+            #print(tree.getValue());
             if tree.getValue() > maxTree.getValue():
                 maxTree = tree;
         return maxTree.getValue();
 
+# Wir wollen einen Baum, der bei Tiefe 0 anfängt und maximal 2 tief ist
+startDepth = 0;
+maxDepth = 7;
+# Neuen Tree erstellen und bis maxDepth ausrechnen
 root = Tree(None,Game(),0);
-root.calculateTree(0, 1);
-root.traverse();
-print("best move-value for max: " + str(root.getBestMoveForMax()));
-root.calculateTree(0,4);
-root.traverse();
-print("best move-value for max: " + str(root.getBestMoveForMax()));
+
+start = time.time();
+root.calculateTree(startDepth, maxDepth);
+end = time.time();
+print("Dauer, um den ganzen Baum zu berechnen: " + str(end - start));
+#root.traverse();
+# Move von Max ausrechnen (min würde automatisch ziehen)
+moveToDo = root.getBestMoveForMax();
+print("Move to do: " + str(moveToDo));
+# Es wurde ein move gezogen und wir holen den neuen Root
+newRoot = root.findNodeByMove(moveToDo);
+# Speicher freiräumen
+root.deleteAllNodesExeptWhenMatchingMove(moveToDo);
+# Baum erweitern (Anmerkung: die effektive Tiefe des Baumes bleibt maxDepth. Depth-Attribut wird aber immer von 0 gezählt)
+print("Neuer Baum: ");
+startDepth = startDepth+1;
+maxDepth = maxDepth+1;
+
+start = time.time();
+root.calculateTree(startDepth, maxDepth);
+end = time.time();
+print("Dauer, um nur eine neue Schicht zuunterst hinzuzufügen: " + str(end - start));
+#newRoot.traverse();
+# Einfach die outputs von traverse vergleichen, um zu sehen, welche Bäume noch da sind :)
+
+
+
+print 
+
+# Beispiel: Der Baum wird zuerst aufgebaut und anschliessend erweitert (bestehende nodes bleiben, bekommen nur einen neuen Value)
+#root = Tree(None,Game(),0);
+#root.calculateTree(0, 1);
+#root.traverse();
+#print("best move-value for max: " + str(root.getBestMoveForMax()));
+#root.calculateTree(0,4);
+#root.traverse();
+#print("best move-value for max: " + str(root.getBestMoveForMax()));
