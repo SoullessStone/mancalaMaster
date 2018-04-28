@@ -9,11 +9,12 @@ class Tree:
     __subTrees = [];
     __moveToGetHere = None;
 
-    def __init__(self, move, game):
+    def __init__(self, move, game, depth):
         self.__moveToGetHere = move;
         self.__gameStatus = game;
         self.__id = uuid.uuid4();
         self.__subTrees = [];
+        self.__depth = depth;
 
     def calculateTree(self, depth, maxDepth):
         if depth == maxDepth:
@@ -26,32 +27,22 @@ class Tree:
             # set new Depth
             newDepth = deepcopy(depth) + 1;
 
-
-            # deepCopy game for Movement
-            newGame = deepcopy(self.__gameStatus);
-            # do Movement
-            newGame.doMove(move);
-            # Make Tree Object
-            currentNode = Tree(move, newGame);
-            self.addSubTree(currentNode);
-            childValue = currentNode.calculateTree(newDepth, maxDepth);
-            childValues.append(childValue);
             # Versuche, bisherigen Node wiederzuverwenden
-            #currentNode = self.findNodeByMove(move);
-            #if currentNode is None:
+            currentNode = self.findNodeByMove(move);
+            if currentNode is None:
                 # deepCopy game for Movement
-            #    newGame = deepcopy(self.__gameStatus);
+                newGame = deepcopy(self.__gameStatus);
                 # do Movement
-            #    newGame.doMove(move);
+                newGame.doMove(move);
                 # Make Tree Object
-            #    currentNode = Tree(move, newGame);
-            #    self.addSubTree(currentNode);
-            #    childValue = currentNode.calculateTree(newDepth, maxDepth);
-            #    childValues.append(childValue);
-           # else:
-            #    print("found");
-            #    childValue = currentNode.calculateTree(newDepth, maxDepth);
-             #   childValues.append(childValue);
+                currentNode = Tree(move, newGame, newDepth);
+                self.addSubTree(currentNode);
+                childValue = currentNode.calculateTree(newDepth, maxDepth);
+                childValues.append(childValue);
+            else:
+                #print("found: ", str(move) + " " + str(currentNode.getId()));
+                childValue = currentNode.calculateTree(newDepth, maxDepth);
+                childValues.append(childValue);
         if self.__gameStatus.isMinTurn():
             self.__value = max(childValues);
             #print(self.__value);
@@ -72,6 +63,9 @@ class Tree:
     def getValue(self):
         return self.__value;
 
+    def getId(self):
+        return self.__id;
+
     def getSubtrees(self):
         return self.__subTrees;
 
@@ -85,19 +79,22 @@ class Tree:
         return None;
 
     def traverse(self):
-        print(str(self.__id) + " -> " + str(self.__moveToGetHere));
+        print(str(self.__depth) + " " + str(self.__id) + " -> move to get here: " + str(self.__moveToGetHere) + ", value: " + str(self.__value));
         for tree in self.__subTrees:
             tree.traverse();
 
     def getBestMoveForMax(self):
-        maxTree = Tree(None,None);
+        maxTree = Tree(None,None,None);
         for tree in self.__subTrees:
             print(tree.getValue());
             if tree.getValue() > maxTree.getValue():
                 maxTree = tree;
-        print(maxTree.getValue());
+        return maxTree.getValue();
 
-root = Tree(None,Game());
-root.calculateTree(0, 9);
-#root.traverse();
-root.getBestMoveForMax();
+root = Tree(None,Game(),0);
+root.calculateTree(0, 1);
+root.traverse();
+print("best move-value for max: " + str(root.getBestMoveForMax()));
+root.calculateTree(0,4);
+root.traverse();
+print("best move-value for max: " + str(root.getBestMoveForMax()));
