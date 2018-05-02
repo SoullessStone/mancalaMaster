@@ -6,7 +6,7 @@ import time;
 
 class Tree:
     __id = None;
-    __value = -1;
+    __value = None;
     __gameStatus = None;
     __subTrees = [];
     __moveToGetHere = None;
@@ -45,13 +45,17 @@ class Tree:
                 #print("found: ", str(move) + " " + str(currentNode.getId()));
                 childValue = currentNode.calculateTree(newDepth, maxDepth);
                 childValues.append(childValue);
+
+        if not childValues: # childValues ist leer
+            return self.calculateLeaveValue(); ######### EVTL NOCH ÜBERLEGEN....
+        
         if self.__gameStatus.isMinTurn():
-            self.__value = max(childValues);
-            #print(self.__value);
-            return max(childValues);
-        else:
             self.__value = min(childValues);
-            return min(childValues);
+            #print(self.__value);
+            return self.__value;
+        else:
+            self.__value = max(childValues);
+            return self.__value;
 
     def calculateLeaveValue(self):
         return self.__gameStatus.gameModel.getFieldValue(self.__gameStatus.gameModel.PLAYER2_BASE) - self.__gameStatus.gameModel.getFieldValue(self.__gameStatus.gameModel.PLAYER1_BASE);
@@ -64,6 +68,9 @@ class Tree:
 
     def getValue(self):
         return self.__value;
+
+    def setValue(self, value):
+        self.__value = value;
 
     def getId(self):
         return self.__id;
@@ -91,17 +98,17 @@ class Tree:
         for tree in self.__subTrees:
             tree.traverse();
 
-    def getBestMoveForMax(self):
+    def getBestMoveForCurrentPlayer(self):
         maxTree = Tree(None,None,None);
         for tree in self.__subTrees:
-            #print(tree.getValue());
-            if tree.getValue() > maxTree.getValue():
+            print("move nr " + str(tree.getMoveToGetHere()) + " -> " + str(tree.getValue()));
+            if maxTree.getValue() == None or tree.getValue() > maxTree.getValue():
                 maxTree = tree;
-        return maxTree.getValue();
-
+        return maxTree.getMoveToGetHere();
+'''
 # Wir wollen einen Baum, der bei Tiefe 0 anfängt und maximal 2 tief ist
 startDepth = 0;
-maxDepth = 7;
+maxDepth = 6;
 # Neuen Tree erstellen und bis maxDepth ausrechnen
 root = Tree(None,Game(),0);
 
@@ -111,7 +118,7 @@ end = time.time();
 print("Dauer, um den ganzen Baum zu berechnen: " + str(end - start));
 #root.traverse();
 # Move von Max ausrechnen (min würde automatisch ziehen)
-moveToDo = root.getBestMoveForMax();
+moveToDo = root.getBestMoveForCurrentPlayer();
 print("Move to do: " + str(moveToDo));
 # Es wurde ein move gezogen und wir holen den neuen Root
 newRoot = root.findNodeByMove(moveToDo);
@@ -128,6 +135,7 @@ end = time.time();
 print("Dauer, um nur eine neue Schicht zuunterst hinzuzufügen: " + str(end - start));
 #newRoot.traverse();
 # Einfach die outputs von traverse vergleichen, um zu sehen, welche Bäume noch da sind :)
+'''
 
 
 

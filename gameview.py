@@ -2,17 +2,27 @@ from tkinter import *;
 from game import Game;
 from player_random import RandomPlayer;
 from player_alphabeta import AlphaBetaPlayer;
+from player_minmax import MinMaxPlayer;
 from time import sleep;
 
 
     
 # Wie kann man das Model updaten?
 class GameView:
+     
+    player = "MINMAX";
+    
     fenster = None;
     game = Game();
+    
     randomPlayer = RandomPlayer();
+    
     alphabetaPlayer = AlphaBetaPlayer();
-    player = "ALPHABETA";
+    
+    minmaxPlayer = MinMaxPlayer();   
+    if player == "MINMAX":
+        minmaxPlayer.init(game, 7);
+        
     delayAiMove = 0;
     
         
@@ -44,6 +54,7 @@ class GameView:
             self.player1_turn["text"] = "";
             self.player2_turn["text"] = "";
             self.terminal["text"] = "Aus die Maus...";
+            return;
         
         if self.player == "RANDOM" and self.game.isMinTurn():
             if self.delayAiMove == 50:
@@ -55,6 +66,13 @@ class GameView:
         if self.player == "ALPHABETA" and self.game.isMinTurn():
             if self.delayAiMove == 50:
                 self.alphabetaPlayer.doMove();
+                self.delayAiMove = 0;
+            else:
+                self.delayAiMove = self.delayAiMove + 1;
+
+        if self.player == "MINMAX" and self.game.isMinTurn():
+            if self.delayAiMove == 50:
+                self.minmaxPlayer.doMove();
                 self.delayAiMove = 0;
             else:
                 self.delayAiMove = self.delayAiMove + 1;
