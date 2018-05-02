@@ -5,9 +5,6 @@ from player_alphabeta import AlphaBetaPlayer;
 from player_minmax import MinMaxPlayer;
 from time import sleep;
 
-
-    
-# Wie kann man das Model updaten?
 class GameView:
      
     player = "MINMAX";
@@ -21,7 +18,7 @@ class GameView:
     
     minmaxPlayer = MinMaxPlayer();   
     if player == "MINMAX":
-        minmaxPlayer.init(game,2);
+        minmaxPlayer.init(game,7);
         
     delayAiMove = 0;
     

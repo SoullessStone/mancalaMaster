@@ -84,6 +84,8 @@ class Game:
                 currentField = 0;
         # Other Players turn
         self.gameModel.switchTurn();
+        if self.isTerminal():
+            self.doTerminalBeanMovement();
     
     # Returns the last move leading to this state
     def getLastMove(self):

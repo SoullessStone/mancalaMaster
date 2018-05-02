@@ -25,6 +25,20 @@ class Tree:
         
         possibleMoves = self.__gameStatus.getPossibleMoves();
         childValues = [];
+
+        # "Experiment"
+        # Wenn jemand nicht mehr ziehen kann, bekommt der Gegner die eigenen Steine
+        # Das muss man einrechnen
+        if not possibleMoves:
+            self.__gameStatus.doTerminalBeanMovement();
+            if self.__gameStatus.isMinTurn():
+                print("MinMaxPlayer ist dran und es gibt keine Züge mehr");
+            else:
+                print("Human ist dran und es gibt keine Züge mehr");
+            print("Score: " + str(self.calculateLeaveValue()));
+            return self.calculateLeaveValue();
+                
+        
         for move in possibleMoves:
             # set new Depth
             newDepth = deepcopy(depth) + 1;
@@ -46,6 +60,7 @@ class Tree:
                 childValue = currentNode.calculateTree(newDepth, maxDepth);
                 childValues.append(childValue);
 
+        # Sollte mit Experiment nicht mehr vorkommen
         if not childValues: # childValues ist leer
             print("used this... not good");
             return self.calculateLeaveValue(); ######### EVTL NOCH ÜBERLEGEN....
