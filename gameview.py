@@ -21,7 +21,7 @@ class GameView:
     
     minmaxPlayer = MinMaxPlayer();   
     if player == "MINMAX":
-        minmaxPlayer.init(game, 7);
+        minmaxPlayer.init(game,2);
         
     delayAiMove = 0;
     

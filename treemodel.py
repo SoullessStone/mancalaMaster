@@ -47,14 +47,15 @@ class Tree:
                 childValues.append(childValue);
 
         if not childValues: # childValues ist leer
+            print("used this... not good");
             return self.calculateLeaveValue(); ######### EVTL NOCH ÜBERLEGEN....
         
         if self.__gameStatus.isMinTurn():
-            self.__value = min(childValues);
+            self.__value = max(childValues);
             #print(self.__value);
             return self.__value;
         else:
-            self.__value = max(childValues);
+            self.__value = min(childValues);
             return self.__value;
 
     def calculateLeaveValue(self):
