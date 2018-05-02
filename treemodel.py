@@ -18,26 +18,13 @@ class Tree:
         self.__subTrees = [];
         self.__depth = depth;
 
-    def calculateTree(self, depth, maxDepth):
+    def calculateTree(self, depth, maxDepth, alpha, beta):
         if depth == maxDepth:
             self.__value = self.calculateLeaveValue();
             return self.__value;
         
         possibleMoves = self.__gameStatus.getPossibleMoves();
-        childValues = [];
-
-        # "Experiment"
-        # Wenn jemand nicht mehr ziehen kann, bekommt der Gegner die eigenen Steine
-        # Das muss man einrechnen
-        if not possibleMoves:
-            self.__gameStatus.doTerminalBeanMovement();
-            if self.__gameStatus.isMinTurn():
-                print("MinMaxPlayer ist dran und es gibt keine Züge mehr");
-            else:
-                print("Human ist dran und es gibt keine Züge mehr");
-            print("Score: " + str(self.calculateLeaveValue()));
-            return self.calculateLeaveValue();
-                
+        childValues = [];                
         
         for move in possibleMoves:
             # set new Depth
@@ -53,25 +40,43 @@ class Tree:
                 # Make Tree Object
                 currentNode = Tree(move, newGame, newDepth);
                 self.addSubTree(currentNode);
-                childValue = currentNode.calculateTree(newDepth, maxDepth);
+                childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
+
+                if newGame.isMaxTurn():
+                    alpha = max(alpha, childValue);
+                    if alpha >= beta:
+                        print("beta-cutoff");
+                        return beta;
+                else:
+                    beta = min(beta, childValue);
+                    if alpha >= beta:
+                        print("alpha-cutoff");
+                        return alpha;
+                
                 childValues.append(childValue);
             else:
                 #print("found: ", str(move) + " " + str(currentNode.getId()));
-                childValue = currentNode.calculateTree(newDepth, maxDepth);
+                childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
                 childValues.append(childValue);
-
-        # Sollte mit Experiment nicht mehr vorkommen
-        if not childValues: # childValues ist leer
-            print("used this... not good");
-            return self.calculateLeaveValue(); ######### EVTL NOCH ÜBERLEGEN....
         
         if self.__gameStatus.isMinTurn():
-            self.__value = max(childValues);
-            #print(self.__value);
-            return self.__value;
+            if not childValues:
+                self.__gameStatus.doTerminalBeanMovement();
+                print("MinMaxPlayer ist dran und es gibt keine Züge mehr");
+                print("Score: " + str(self.calculateLeaveValue()));
+                return self.calculateLeaveValue();
+            else:
+                self.__value = max(childValues);
+                return self.__value;
         else:
-            self.__value = min(childValues);
-            return self.__value;
+            if not childValues:
+                self.__gameStatus.doTerminalBeanMovement();
+                print("Human ist dran und es gibt keine Züge mehr");
+                print("Score: " + str(self.calculateLeaveValue()));
+                return self.calculateLeaveValue();
+            else:
+                self.__value = min(childValues);
+                return self.__value;
 
     def calculateLeaveValue(self):
         return self.__gameStatus.gameModel.getFieldValue(self.__gameStatus.gameModel.PLAYER2_BASE) - self.__gameStatus.gameModel.getFieldValue(self.__gameStatus.gameModel.PLAYER1_BASE);
