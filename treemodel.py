@@ -45,12 +45,12 @@ class Tree:
                 if newGame.isMaxTurn():
                     alpha = max(alpha, childValue);
                     if alpha >= beta:
-                        print("beta-cutoff");
+                        #print("beta-cutoff");
                         return beta;
                 else:
                     beta = min(beta, childValue);
                     if alpha >= beta:
-                        print("alpha-cutoff");
+                        #print("alpha-cutoff");
                         return alpha;
                 
                 childValues.append(childValue);
@@ -123,6 +123,8 @@ class Tree:
         maxTree = Tree(None,None,None);
         for tree in self.__subTrees:
             print("move nr " + str(tree.getMoveToGetHere()) + " -> " + str(tree.getValue()));
+            if tree.getValue() is None:
+                continue;
             if maxTree.getValue() == None or tree.getValue() > maxTree.getValue():
                 maxTree = tree;
         return maxTree.getMoveToGetHere();
