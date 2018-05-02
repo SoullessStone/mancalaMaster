@@ -13,7 +13,9 @@ class MinMaxPlayer:
         self.startDepth = 0;
         self.tree = Tree(None, game, 0);
         print("Berechne initialen Baum");
-        self.tree.calculateTree(0, self.maxDepth);
+        self.alpha = -9999;
+        self.beta = 9999;
+        self.tree.calculateTree(0, self.maxDepth, self.alpha, self.beta);
 
     def doMove(self):
         # Spielstand nach Max-Zug in Tree nachführen
@@ -34,7 +36,7 @@ class MinMaxPlayer:
         self.tree = self.tree.findNodeByMove(move);
         self.startDepth = self.startDepth + 1;
         self.maxDepth = self.maxDepth + 1;
-        self.tree.calculateTree(self.startDepth, self.maxDepth);
+        self.tree.calculateTree(self.startDepth, self.maxDepth, self.alpha, self.beta);
 '''
 game = Game();
 player = MinMaxPlayer();
