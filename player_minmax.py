@@ -7,22 +7,28 @@ class MinMaxPlayer:
     def setGame(self, game):
         self.game = game;
 
-    def init(self, game, maxDepth):
+    def init(self, game, maxDepth, isMax):
         self.game = game;
         self.maxDepth = maxDepth;
         self.startDepth = 0;
-        self.tree = Tree(None, game, 0);
+        self.isMax = isMax;
+        self.tree = Tree(None, game, 0, isMax);
         print("Berechne initialen Baum");
         self.alpha = -9999;
         self.beta = 9999;
         self.tree.calculateTree(0, self.maxDepth, self.alpha, self.beta);
+        print("Done!");
 
     def doMove(self):
         # Spielstand nach Max-Zug in Tree nachführen
         lastMoveByMax = self.game.getLastMove();
-        print("lastMoveByMax: " + str(lastMoveByMax));
-        self.updateMinMaxTree(lastMoveByMax);
-        moveToDo = self.tree.getBestMoveForCurrentPlayer();
+        if lastMoveByMax:
+            print("lastMoveByMax: " + str(lastMoveByMax));
+            self.updateMinMaxTree(lastMoveByMax);
+        if self.isMax:
+            moveToDo = self.tree.getBestMoveForMax();
+        else:
+            moveToDo = self.tree.getBestMoveForMin();
         print("moveToDo: " + str(moveToDo));
         self.game.doMove(moveToDo);
         self.updateMinMaxTree(moveToDo);

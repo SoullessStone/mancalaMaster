@@ -8,6 +8,7 @@ from time import sleep;
 class GameView:
      
     player = "MINMAX";
+    isMinMaxMax = False;
     
     fenster = None;
     game = Game();
@@ -18,7 +19,7 @@ class GameView:
     
     minmaxPlayer = MinMaxPlayer();   
     if player == "MINMAX":
-        minmaxPlayer.init(game,7);
+        minmaxPlayer.init(game,7,isMinMaxMax);
         
     delayAiMove = 0;
     
@@ -67,12 +68,13 @@ class GameView:
             else:
                 self.delayAiMove = self.delayAiMove + 1;
 
-        if self.player == "MINMAX" and self.game.isMinTurn():
-            if self.delayAiMove == 50:
-                self.minmaxPlayer.doMove();
-                self.delayAiMove = 0;
-            else:
-                self.delayAiMove = self.delayAiMove + 1;
+        if self.player == "MINMAX":
+            if (self.isMinMaxMax==False and self.game.isMinTurn()) or (self.isMinMaxMax==True and self.game.isMaxTurn()):
+                if self.delayAiMove == 50:
+                    self.minmaxPlayer.doMove();
+                    self.delayAiMove = 0;
+                else:
+                    self.delayAiMove = self.delayAiMove + 1;
             
             
         self.fenster.after(50,self.updateView);

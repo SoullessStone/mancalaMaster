@@ -11,12 +11,19 @@ class Tree:
     __subTrees = [];
     __moveToGetHere = None;
 
-    def __init__(self, move, game, depth):
+    def __init__(self, move, game, depth, isMax):
         self.__moveToGetHere = move;
         self.__gameStatus = game;
         self.__id = uuid.uuid4();
         self.__subTrees = [];
         self.__depth = depth;
+        self.__isMax = isMax;
+        if isMax:
+            self.__minMaxFnc1 = max;
+            self.__minMaxFnc2 = min;
+        else:
+            self.__minMaxFnc1 = min;
+            self.__minMaxFnc2 = max;
 
     def calculateTree(self, depth, maxDepth, alpha, beta):
         if depth == maxDepth:
@@ -38,17 +45,17 @@ class Tree:
                 # do Movement
                 newGame.doMove(move);
                 # Make Tree Object
-                currentNode = Tree(move, newGame, newDepth);
+                currentNode = Tree(move, newGame, newDepth, self.__isMax);
                 self.addSubTree(currentNode);
                 childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
 
                 if newGame.isMaxTurn():
-                    alpha = min(alpha, childValue);
+                    alpha = self.__minMaxFnc1(alpha, childValue);
                     if alpha >= beta:
                         #print("beta-cutoff");
                         return beta;
                 else:
-                    beta = max(beta, childValue);
+                    beta = self.__minMaxFnc2(beta, childValue);
                     if alpha >= beta:
                         #print("alpha-cutoff");
                         return alpha;
@@ -66,7 +73,7 @@ class Tree:
                 print("Score: " + str(self.calculateLeaveValue()));
                 return self.calculateLeaveValue();
             else:
-                self.__value = max(childValues);
+                self.__value = self.__minMaxFnc2(childValues);
                 return self.__value;
         else:
             if not childValues:
@@ -75,7 +82,7 @@ class Tree:
                 print("Score: " + str(self.calculateLeaveValue()));
                 return self.calculateLeaveValue();
             else:
-                self.__value = min(childValues);
+                self.__value = self.__minMaxFnc1(childValues);
                 return self.__value;
 
     def calculateLeaveValue(self):
@@ -119,13 +126,24 @@ class Tree:
         for tree in self.__subTrees:
             tree.traverse();
 
-    def getBestMoveForCurrentPlayer(self):
-        maxTree = Tree(None,None,None);
+    def getBestMoveForMin(self):
+        maxTree = Tree(None,None,None, self.__isMax);
         for tree in self.__subTrees:
-            print("move nr " + str(tree.getMoveToGetHere()) + " -> " + str(tree.getValue()));
+            print("min-move nr " + str(tree.getMoveToGetHere()) + " -> " + str(tree.getValue()));
             if tree.getValue() is None:
                 continue;
             if maxTree.getValue() == None or tree.getValue() > maxTree.getValue():
+                maxTree = tree;
+        return maxTree.getMoveToGetHere();
+
+    def getBestMoveForMax(self):
+        maxTree = Tree(None,None,None, self.__isMax);
+        maxTree.setValue(9999);
+        for tree in self.__subTrees:
+            print("max-move nr " + str(tree.getMoveToGetHere()) + " -> " + str(tree.getValue()));
+            if tree.getValue() is None:
+                continue;
+            if maxTree.getValue() == None or tree.getValue() < maxTree.getValue():
                 maxTree = tree;
         return maxTree.getMoveToGetHere();
 '''
