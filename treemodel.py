@@ -43,12 +43,12 @@ class Tree:
                 childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
 
                 if newGame.isMaxTurn():
-                    alpha = max(alpha, childValue);
+                    alpha = min(alpha, childValue);
                     if alpha >= beta:
                         #print("beta-cutoff");
                         return beta;
                 else:
-                    beta = min(beta, childValue);
+                    beta = max(beta, childValue);
                     if alpha >= beta:
                         #print("alpha-cutoff");
                         return alpha;
