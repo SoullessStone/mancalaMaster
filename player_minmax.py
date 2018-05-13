@@ -42,6 +42,8 @@ class MinMaxPlayer:
         self.tree = self.tree.findNodeByMove(move);
         self.startDepth = self.startDepth + 1;
         self.maxDepth = self.maxDepth + 1;
+        if self.tree is None:
+            print("Sollte nicht auftreten, müssen über die Bücher");
         self.tree.calculateTree(self.startDepth, self.maxDepth, self.alpha, self.beta);
 '''
 game = Game();
