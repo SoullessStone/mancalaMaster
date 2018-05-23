@@ -27,63 +27,82 @@ class Tree:
             self.__minMaxFnc2 = max;
 
     def calculateTree(self, depth, maxDepth, alpha, beta):
+        # Aufhören, wenn wir die maximale Tiefe erreichen
         if depth == maxDepth:
+            # Spiel bewerten und Wert zurückgeben
             self.__value = self.calculateLeaveValue();
             return self.__value;
-        
+
+        # Mögliche Züge ausrechnen
         possibleMoves = self.__gameStatus.getPossibleMoves();
+        # Array für mögliche Werte der Züge erstellen
         childValues = [];                
         
         for move in possibleMoves:
-            # set new Depth
+            # Neue Tiefe setzen
             newDepth = deepcopy(depth) + 1;
 
             # Versuche, bisherigen Node wiederzuverwenden
             currentNode = self.findNodeByMove(move);
             if currentNode is None:
-                # deepCopy game for Movement
+                # Es wurde keine Node gefunden, der wiederverwendet werden kann
+                # deepCopy game für neuen Zug
                 newGame = deepcopy(self.__gameStatus);
-                # do Movement
+                # Neuen Zug ausführen
                 newGame.doMove(move);
-                # Make Tree Object
+                # Neuen Node anlegen
                 currentNode = Tree(move, newGame, newDepth, self.__isMax);
                 self.addSubTree(currentNode);
+                # Wert des Nodes berechnen (rekursiv)
                 childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
 
+                # AlphaBetaPruning kann ein- und ausgeschaltet werden
                 if self.__alphaBetaOn:
+                    # AlphaBetaPruning gemäss Folien
                     if newGame.isMaxTurn():
                         alpha = self.__minMaxFnc1(alpha, childValue);
                         if alpha >= beta:
-                            #print("beta-cutoff");
                             return beta;
                     else:
                         beta = self.__minMaxFnc2(beta, childValue);
                         if alpha >= beta:
-                            #print("alpha-cutoff");
                             return alpha;
                 
                 childValues.append(childValue);
             else:
-                #print("found: ", str(move) + " " + str(currentNode.getId()));
+                # Node kann wiederverwendet werden
+                # Nur Wert des Nodes neu berechnen
                 childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
                 childValues.append(childValue);
-        
+
+        # Min und Max unterschiedlich behandeln
         if self.__gameStatus.isMinTurn():
             if not childValues:
+                # finale Züge ausführen (siehe Spielende Mancala)
                 self.__gameStatus.doTerminalBeanMovement();
                 print("MinMaxPlayer ist dran und es gibt keine Züge mehr");
                 print("Score: " + str(self.calculateLeaveValue()));
+                # Spielstanddifferenz zurückliefern
                 return self.calculateLeaveValue();
             else:
+                # Es gibt noch Züge
+                # Neues Value berechnen und zurückliefern
+                # __minMaxFnc2 wird auf max oder min gesetzt, je nachdem ob der Computer
+                # MAX- oder MIN-Spieler ist.
                 self.__value = self.__minMaxFnc2(childValues);
                 return self.__value;
         else:
             if not childValues:
+                # finale Züge ausführen (siehe Spielende Mancala)
                 self.__gameStatus.doTerminalBeanMovement();
                 print("Human ist dran und es gibt keine Züge mehr");
                 print("Score: " + str(self.calculateLeaveValue()));
                 return self.calculateLeaveValue();
             else:
+                # Es gibt noch Züge
+                # Neues Value berechnen und zurückliefern
+                # __minMaxFnc2 wird auf max oder min gesetzt, je nachdem ob der Computer
+                # MAX- oder MIN-Spieler ist.
                 self.__value = self.__minMaxFnc1(childValues);
                 return self.__value;
 
