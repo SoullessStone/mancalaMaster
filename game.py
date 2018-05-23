@@ -37,52 +37,56 @@ class Game:
         self.gameModel.changeFieldValue(self.gameModel.PLAYER2_5,0);
         self.gameModel.changeFieldValue(self.gameModel.PLAYER2_6,0);
     
-    # Do a move on current state
+    # Zug auf den momentanen Status des Games ausführen
     def doMove(self, move):
+        # Überprüfen ob das Spiel schon den Final State erreicht hat
         if self.isTerminal():
             return;
+        # Überprüfen ob der Zug auf der Seite des momentanen Spielers ist
         if not self.isFieldOnCurrentPlayerSide(move):
             print("Move " + str(move) + " is not legal");
             return;
-        # Get Bean count
+        # Anzahl der Bohnen holen
         beans = self.gameModel.getFieldValue(move);
 
-        # No Beans in Field no Move possible
+        # Falls keine Bohnen vorhanden kann der Zug nicht ausgefürht werden (illigal move)
         if beans == 0:
             print("Move " + str(move) + " no beans to move");
             return;
 
-        # set last Move
+        # Setzen des letzten Zuges
         self.__lastMove = move;
         
-        # Remove all beans from taken holder
+        # Alle Bohnen aus momentanem Feld entfernen
         self.gameModel.changeFieldValue(move, 0);
         currentField = move + 1;
         while beans > 0:
+            # Falls Min-Max am Zug und das Punktefeld erreicht wird eine Bohnen abgelegt
             if (self.isMaxTurn() and currentField == self.gameModel.PLAYER2_BASE):
                 currentField = 0;
-                continue; # Player 1 does not put beans into Player 2 base
+                continue; # Spieler 1 legt keine Bohnen in das Punktefeld von Spieler 2
+            # Falls Spieler am Zug und das Punktefeld erreicht wird eine Bohnen abgelegt
             if (self.isMinTurn() and currentField == self.gameModel.PLAYER1_BASE):
                 currentField = currentField + 1;
-                continue; # Player 2 does not put beans into Player 1 base
+                continue; # Spieler 2 legt keine Bohnen in das Punktefeld von Spieler 1
 
-            # Add bean to current Field
+            # Eine Bohnen zum momentanen Feld hinzufügen
             currentValue = self.gameModel.getFieldValue(currentField);
             newValue = currentValue + 1;
             self.gameModel.changeFieldValue(currentField, newValue);
-            # One bean taken, less remain
+            # Anzahl der übrigen Bohnen um 1 verringern da eine in eine Feld gelegt wurde
             beans = beans - 1;
 
-            # if it is the last bean and it is put on an empty field on the players side, the
-            # the player can take the one bean on his side and the beans on the other side
+            # Falls die letzte Bohne in ein leeres Feld gelegt wird und auf der gegenseite auch Bohnen liegen
+            # kann der Spieler die Bohnen beider Felder in sein Punktefeld legen
             if newValue == 1 and beans == 0 and self.isFieldOnCurrentPlayerSide(currentField):
                 self.handleLastBeanOnOwnEmptyField(currentField);
             
-            # Move to next field
+            # Vorrücken auf das nächste Feld
             currentField = currentField + 1;
             if currentField == self.gameModel.PLAYER2_BASE + 1:
                 currentField = 0;
-        # Other Players turn
+        # Zug an den anderen Spieler übergeben
         self.gameModel.switchTurn();
         if self.isTerminal():
             self.doTerminalBeanMovement();
