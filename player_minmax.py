@@ -22,7 +22,8 @@ class MinMaxPlayer:
     def doMove(self):
         # Spielstand nach Max-Zug in Tree nachführen
         lastMoveByMax = self.game.getLastMove();
-        if lastMoveByMax:
+        
+        if lastMoveByMax or lastMoveByMax == 0:
             print("lastMoveByMax: " + str(lastMoveByMax));
             self.updateMinMaxTree(lastMoveByMax);
         if self.isMax:

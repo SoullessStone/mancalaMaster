@@ -10,6 +10,7 @@ class Tree:
     __gameStatus = None;
     __subTrees = [];
     __moveToGetHere = None;
+    __alphaBetaOn = False;
 
     def __init__(self, move, game, depth, isMax):
         self.__moveToGetHere = move;
@@ -49,16 +50,17 @@ class Tree:
                 self.addSubTree(currentNode);
                 childValue = currentNode.calculateTree(newDepth, maxDepth, alpha, beta);
 
-                if newGame.isMaxTurn():
-                    alpha = self.__minMaxFnc1(alpha, childValue);
-                    if alpha >= beta:
-                        #print("beta-cutoff");
-                        return beta;
-                else:
-                    beta = self.__minMaxFnc2(beta, childValue);
-                    if alpha >= beta:
-                        #print("alpha-cutoff");
-                        return alpha;
+                if self.__alphaBetaOn:
+                    if newGame.isMaxTurn():
+                        alpha = self.__minMaxFnc1(alpha, childValue);
+                        if alpha >= beta:
+                            #print("beta-cutoff");
+                            return beta;
+                    else:
+                        beta = self.__minMaxFnc2(beta, childValue);
+                        if alpha >= beta:
+                            #print("alpha-cutoff");
+                            return alpha;
                 
                 childValues.append(childValue);
             else:

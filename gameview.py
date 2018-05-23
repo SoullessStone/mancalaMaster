@@ -107,7 +107,7 @@ class GameView:
         self.player1_turn = Label(self.fenster, text="");
         self.player2_turn = Label(self.fenster, text="");
         self.terminal = Label(self.fenster, text="");
-        self.reset = Button(self.fenster, text="Reset",command= self.game.reset);
+        #self.reset = Button(self.fenster, text="Reset",command= self.game.reset);
 
         self.p2_6.grid(row=0, column=0, pady = 20);
         self.p1_1.grid(row=4, column=0, pady = 20);
@@ -126,7 +126,7 @@ class GameView:
         self.player1_turn.grid(row=4, column=6, pady = 20);
         self.player2_turn.grid(row=0, column=6, pady = 20);
         self.terminal.grid(row=2, column=6, pady = 20);
-        self.reset.grid(row=2, column=7, pady = 20);
+        #self.reset.grid(row=2, column=7, pady = 20);
 
         self.randomPlayer.setGame(self.game);
         self.alphabetaPlayer.setGame(self.game);
